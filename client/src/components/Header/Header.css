@@ -1,0 +1,23 @@
+.navbar {
+  border-bottom: 1px solid #dee2e6;
+  border-right-style: none;
+  border-left-style: none;
+}
+
+.dropdown-menu-lg {
+  max-width: 300px;
+  min-width: 280px;
+  padding: 0;
+}
+
+.dropdown-item {
+  color: #212529;
+}
+
+.dropdown-footer,
+.dropdown-header {
+  display: block;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  text-align: center;
+}

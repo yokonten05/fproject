@@ -1,0 +1,7 @@
+.main-sidebar {
+  bottom: 0;
+  float: none;
+  left: 0;
+  position: fixed !important;
+  top: 0 !important;
+}

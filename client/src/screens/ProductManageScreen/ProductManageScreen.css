@@ -1,0 +1,23 @@
+.form-control {
+    box-shadow: none;
+}
+
+.card {
+    border: 0
+}
+
+.card-title {
+    margin-bottom: 0 !important;
+}
+
+.collapseAddProduct:not(.disabled):hover {
+    margin-top: -.75rem !important;
+}
+
+.collapseAddProduct:not(.disabled):active {
+    margin-top: -.75rem !important;
+}
+
+/* .btn:not(.disabled):hover {
+    margin-top: 0;
+} */
