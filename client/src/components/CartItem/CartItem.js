@@ -14,7 +14,7 @@ const CartItem = ({ item, qtyChangeHandler, removeHandler }) => {
     <div className="cart">
       <div className="row main align-items-center">
         <div className="col-3">
-          <img className="img-fluid img-thumbnail rounded" src={item.imageUrl} />
+          <img alt="" className="img-fluid img-thumbnail rounded" src={item.imageUrl} />
         </div>
         <div className="col-3">
           {/* <h4 className="row">

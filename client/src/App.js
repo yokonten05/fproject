@@ -10,7 +10,7 @@ import LoginScreen from "./screens/LoginScreen/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen/RegisterScreen";
 import ProductDetailScreen from "./screens/ProductDetailScreen/ProductDetailScreen";
 import CartScreen from "./screens/CartScreen/CartScreen";
-// import CheckOutScreen from "./screens/CheckOutScreen/CheckOutScreen";
+import CheckOutScreen from "./screens/CheckOutScreen/CheckOutScreen";
 import LandingPage from "./screens/LandingPage/LandingPage";
 import Dashboard from "./screens/DashboardScreen/Dashboard";
 import ProductScreen from "./screens/ProductScreen/ProductScreen";
@@ -45,9 +45,9 @@ function App() {
           <Route path="/orderManage">
             <OrderManageScreen />
           </Route>
-          {/* <Route path="/checkout">
+          <Route path="/checkout">
             <CheckOutScreen />
-          </Route> */}
+          </Route>
           <Route path="/login">
             <LoginScreen />
           </Route>

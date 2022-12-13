@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Form } from "react-bootstrap";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import Select from "react-select";
 import { toast, ToastContainer } from "react-toastify";
 
 //CSS
@@ -26,6 +25,7 @@ import {
   deleteProduct as deletedProduct,
 } from "../../actions/productActions";
 import { getCategories as listCategories } from "../../actions/categoryActions";
+import { Link } from "react-router-dom";
 
 const MySwal = withReactContent(Swal);
 
@@ -151,26 +151,26 @@ const ProductManageScreen = () => {
 
   const MyCellEdit = (row) => {
     return (
-      <a
-        href="#"
+      <Link
+        to="#"
         className="text-primary"
         onClick={(e) => modalHandler(e, row.original)}
       >
         <i className="fa fa-pencil"></i>
-      </a>
+      </Link>
     );
   };
 
   const MyCellDelete = (id) => {
     return (
-      <a
-        href="#"
+      <Link
+        to="#"
         className="text-danger"
         data-id={id}
         onClick={(e) => deleteHandler(e, id)}
       >
         <i className="fa fa-trash"></i>
-      </a>
+      </Link>
     );
   };
 
@@ -384,6 +384,7 @@ const ProductManageScreen = () => {
                             </div>
                             {imageUrl && (
                               <img
+                                alt=""
                                 className="img-thumbnail mt-3"
                                 src={imageUrl}
                                 width={250}

@@ -41,7 +41,7 @@ const Header = () => {
   const viewCartHandLer = (e) => {
     e.preventDefault();
 
-    history.push("/cart");
+    history.push("/checkout");
   };
   return (
     <div>
@@ -89,7 +89,7 @@ const Header = () => {
                 ? ""
                 : cartItems.map((el, index) => (
                     <div key={el.product}>
-                      <a href="#" className="dropdown-item">
+                      <Link to="#" className="dropdown-item">
                         <div className="media">
                           <img
                             src={el.imageUrl}
@@ -109,12 +109,12 @@ const Header = () => {
                             </p>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                       <div className="dropdown-divider" />
                     </div>
                   ))}
-              <a
-                href="#"
+              <Link
+                to="#"
                 className="dropdown-item dropdown-footer"
                 onClick={viewCartHandLer}
               >
@@ -123,7 +123,7 @@ const Header = () => {
                 ) : (
                   <div>ดูสินค้าในตะกร้าของคุณ</div>
                 )}
-              </a>
+              </Link>
             </div>
           </li>
         </ul>
