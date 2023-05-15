@@ -117,7 +117,7 @@ const ProductManageScreen = () => {
       };
     }
   };
-
+  
   const submitHandler = (e) => {
     e.preventDefault();
 
@@ -423,7 +423,7 @@ const ProductManageScreen = () => {
           </div>
         </section>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

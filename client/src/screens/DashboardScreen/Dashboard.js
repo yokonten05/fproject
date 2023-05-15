@@ -127,7 +127,7 @@ const Dashboard = () => {
         </section>
         {/* Lastest Products */}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

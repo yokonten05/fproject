@@ -1,40 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
+import axios from "axios";
+import SweetAlert2 from "react-sweetalert2";
 
 //CSS
 import "./CheckOutScreen.css";
+
+import * as actionTypes from "../../constants/orderConstants";
 
 //Components
 import CartItem from "../../components/CartItem/CartItem";
 import Menu from "../../components/Menu/Menu";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import { SwalError, SwalSuccess } from "../../components/Swal";
 
 //Actions
 import { addOrder as addedOrder } from "../../actions/orderActions";
-import { addToCart, removeFromCart } from "../../actions/cartActions";
 
-const MySwal = withReactContent(Swal);
+import { addToCart, removeFromCart } from "../../actions/cartActions";
+import Loading from "../../components/Loading";
 
 const CheckOutScreen = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const cart = useSelector((state) => state.cart);
-  const { cartItems } = cart;
+  //get
+  const userId = JSON.parse(localStorage.getItem("userInfo"))._id;
+
+  // const cart = useSelector((state) => state.cart);
+  // const { cartItems } = cart;
+  const getCartById = useSelector((state) => state.getCarts);
+  const { cartItems } = getCartById;
 
   //crete
   const addOrder = useSelector((state) => state.addOrder);
   const { loading, error, success } = addOrder;
 
-  useEffect(() => {
-    clearState();
-  }, [dispatch]);
-
   const initialState = {
+    id: "",
     senderTel: "",
     senderFirstName: "",
     senderLastName: "",
@@ -51,6 +56,7 @@ const CheckOutScreen = () => {
 
   const [
     {
+      id,
       senderTel,
       senderFirstName,
       senderLastName,
@@ -67,9 +73,29 @@ const CheckOutScreen = () => {
     setState,
   ] = useState(initialState);
 
-  const clearState = () => {
-    setState({ ...initialState });
-  };
+  // const clearState = useCallback(() => {
+  //   setState({ ...initialState });
+  // }, [initialState]);
+
+  const getUser = useCallback(async () => {
+    const { data } = await axios.get(`/api/users/${userId}`);
+    const { _id, tel, firstName, lastName, address } = data;
+    if (data) {
+      setState((state) => ({
+        ...state,
+        id: _id,
+        senderTel: tel,
+        senderFirstName: firstName,
+        senderLastName: lastName,
+        senderAddress: address,
+      }));
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    // clearState();
+    getUser();
+  }, [dispatch, getUser, userId]);
 
   const onChange = (e) => {
     const target = e.target ? e.target : e;
@@ -80,6 +106,7 @@ const CheckOutScreen = () => {
     e.preventDefault();
     dispatch(
       addedOrder(
+        id,
         senderTel,
         senderFirstName,
         senderLastName,
@@ -95,31 +122,16 @@ const CheckOutScreen = () => {
         cartItems
       )
     );
+  };
 
-    // if (error) {
-    //   MySwal.fire({
-    //     text: "กรุณากรอกข้อมูลให้ครบถ้วน",
-    //     icon: "error",
-    //     showCancelButton: false,
-    //     confirmButtonText: "ตกลง",
-    //   });
-    // } else if (success) {
-    //   MySwal.fire({
-    //     text: "การสั่งซื้อสำเร็จ\nไปที่จัดการสินค้า",
-    //     icon: "success",
-    //     showCancelButton: false,
-    //     confirmButtonText: "ตกลง",
-    //   }).then((result) => {
-    //     if (result.isConfirmed) {
-    //       history.push("/dashboard");
-    //     }
-    //   });
-    // }
+  const ok = () => {
+    history.push("./dashboard");
+    dispatch({ type: actionTypes.ADD_ORDER_RESET });
   };
 
   //cart
-  const qtyChangeHandler = (id, qty) => {
-    dispatch(addToCart(id, qty));
+  const qtyChangeHandler = (productId, qty) => {
+    dispatch(addToCart(userId, productId, qty));
   };
 
   const removeHandler = (id) => {
@@ -127,21 +139,54 @@ const CheckOutScreen = () => {
   };
 
   const getCartCount = () => {
-    return cartItems.reduce((pre, cur) => pre + cur.qty.value, 0);
+    return cartItems
+      ? cartItems.reduce((pre, cur) => pre + cur.qty.value, 0)
+      : 0;
   };
 
   const getCartTotal = () => {
-    return cartItems.reduce((pre, cur) => cur.price * cur.qty.value + pre, 0);
+    return cartItems
+      ? cartItems.reduce((pre, cur) => cur.price * cur.qty.value + pre, 0)
+      : 0;
   };
 
   const getCartSubTotal = (item) => {
     return item.price * item.qty.value;
   };
+
   return (
     <div>
       <Menu />
       <Header />
       <div className="content-wrapper" style={{ minHeight: "1604.44px" }}>
+        {loading && <Loading />}
+        {error && (
+          // <SwalError
+          //   text={"กรุณากรอกข้อมูลให้ครบถ้วน"}
+          //   onSubmit={ok}
+          // />
+          <SweetAlert2
+            show={true}
+            text={"กรุณากรอกข้อมูลให้ครบถ้วน"}
+            icon={"error"}
+            confirmButtonText={"ตกลง"}
+            onConfirm={ok}
+          />
+        )}
+        {success && (
+          // <SwalSuccess
+          //   text={"การสั่งซื้อสำเร็จ\nไปที่จัดการสินค้า"}
+          //   path={"./dashboard"}
+          //   onSubmit={ok}
+          // />
+          <SweetAlert2
+            show={true}
+            text={"การสั่งซื้อสำเร็จ\nไปที่จัดการสินค้า"}
+            icon={"success"}
+            // confirmButtonText={"ตกลง"}
+            onConfirm={ok}
+          />
+        )}
         <div className="row">
           <div className="col-sm-12 col-lg-8">
             <section className="content-header">
@@ -153,14 +198,14 @@ const CheckOutScreen = () => {
 
             <section className="content">
               <div className="container-fluid">
-                {cartItems.length === 0 ? (
+                {!cartItems || cartItems.length === 0 ? (
                   <div>
                     Your cart is empty <Link to="/dashboard">Go Back</Link>
                   </div>
                 ) : (
                   cartItems.map((item) => (
                     <CartItem
-                      key={item.product}
+                      key={item.productId}
                       item={item}
                       qtyChangeHandler={qtyChangeHandler}
                       removeHandler={removeHandler}
@@ -194,7 +239,7 @@ const CheckOutScreen = () => {
                   </div>
                 </div>
 
-                {cartItems.length === 0 ? (
+                {!cartItems || cartItems.length === 0 ? (
                   <div className="row">
                     <div className="col">ไม่มีสินค้าที่ถูกเพิ่ม</div>
                     <div className="col text-right">00.00 ฿</div>
@@ -247,6 +292,14 @@ const CheckOutScreen = () => {
                 <form onSubmit={submitHandler}>
                   <div className="row">
                     <div className="col-sm-12 col-lg-6">
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="id"
+                        value={id}
+                        onChange={onChange}
+                        hidden
+                      />
                       <div className="form-group">
                         <label className="col-form-label">
                           เบอร์โทร <span className="required">*</span>
@@ -404,7 +457,7 @@ const CheckOutScreen = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

@@ -3,8 +3,9 @@ const dotenv = require("dotenv");
 
 const userRoutes = require("../server/routes/userRoutes");
 const productRoutes = require("../server/routes/productRoutes");
+const cartRoutes = require("../server/routes/cartRoutes");
 const categoryRoutes = require("../server/routes/categoryRoutes");
-const orderRoutes = require("../server/routes/orderRoutes")
+const orderRoutes = require("../server/routes/orderRoutes");
 const connectDB = require("./config/db");
 const { notFound, errorHandler } = require("./middlewares/errorMiddlewares");
 const app = express(); // main thing
@@ -24,6 +25,7 @@ app.use(cors(corsOptions));
 
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/carts", cartRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/orders", orderRoutes);
 

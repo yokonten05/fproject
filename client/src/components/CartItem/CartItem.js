@@ -25,7 +25,7 @@ const CartItem = ({ item, qtyChangeHandler, removeHandler }) => {
         <div className="col-3">
           <Select
             value={item.qty}
-            onChange={(e) => qtyChangeHandler(item.product, e)}
+            onChange={(e) => qtyChangeHandler(item.productId, e)}
             options={[...Array(item.countInStock).keys()].map((el) => ({
               value: el + 1,
               label: el + 1,
@@ -35,7 +35,7 @@ const CartItem = ({ item, qtyChangeHandler, removeHandler }) => {
         <div className="col-2 text-center">{item.price} ฿</div>
         <div
           className="col-1 text-center"
-          onClick={() => removeHandler(item.product)}
+          onClick={() => removeHandler(item.productId)}
         >
           <Link to="#">
             <i className="fa fa-trash text-danger"></i>

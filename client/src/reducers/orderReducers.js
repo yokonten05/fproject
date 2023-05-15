@@ -21,6 +21,31 @@ export const getOrdersReducer = (state = { orders: [] }, action) => {
   }
 };
 
+// export const getOrderByIdReducer = (state = { product: {} }, action) => {
+//   switch (action.type) {
+//     case actionTypes.get:
+//       return {
+//         loading: true,
+//       };
+//     case actionTypes.GET_ORDERS_DETAILS_REQUEST:
+//       return {
+//         loading: false,
+//         order: action.payload,
+//       };
+//     case actionTypes.GET_ORDERS_DETAILS_SUCCESS:
+//       return {
+//         loading: false,
+//         error: action.payload,
+//       };
+//     case actionTypes.GET_ORDERS_DETAILS_FAIL:
+//       return {
+//         order: {},
+//       };
+//     default:
+//       return state;
+//   }
+// };
+
 export const addOrderReducer = (state = {}, action) => {
   switch (action.type) {
     case actionTypes.ADD_ORDER_REQUEST:
@@ -29,6 +54,8 @@ export const addOrderReducer = (state = {}, action) => {
       return { loading: false, success: true };
     case actionTypes.ADD_ORDER_FAIL:
       return { loading: false, error: action.payload };
+    case actionTypes.ADD_ORDER_RESET:
+      return {};
     default:
       return state;
   }

@@ -2,6 +2,17 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const generateToken = require("../utils/generateToken");
 
+const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    
+    res.json(user);
+  } catch (error) {
+    res.status(400);
+    throw new Error(`Error Occured!`);
+  }
+};
+
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, isAdmin, pic } = req.body;
 
@@ -55,4 +66,4 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, authUser };
+module.exports = { getUserById, registerUser, authUser };

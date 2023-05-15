@@ -1,8 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 //Reducers
-import { userLoginReducer, userRegisterReducer } from "./reducers/userReducers";
-import { cartReducer } from "./reducers/cartReducers";
+import {
+  getUserReducer,
+  userLoginReducer,
+  userRegisterReducer,
+} from "./reducers/userReducers";
+import {
+  getCartReducer,
+  cartReducer,
+  removeCartReducer,
+} from "./reducers/cartReducers";
 import {
   getProductsReducer,
   getProductDetailsReducer,
@@ -17,20 +25,18 @@ const userInfoFromStorage = localStorage.getItem("userInfo")
   ? JSON.parse(localStorage.getItem("userInfo"))
   : null;
 
-const cartFromStorage = localStorage.getItem("cart")
-  ? JSON.parse(localStorage.getItem("cart"))
-  : null;
-
 const initialState = {
   userLogin: { userInfo: userInfoFromStorage },
-  cart: { cartItems: cartFromStorage },
 };
 
 const store = configureStore({
   reducer: {
+    getUser: getUserReducer,
     userLogin: userLoginReducer,
     userRegister: userRegisterReducer,
-    cart: cartReducer,
+    getCarts: getCartReducer,
+    addCart: cartReducer,
+    deleteCart: removeCartReducer,
     getProducts: getProductsReducer,
     getProductDetails: getProductDetailsReducer,
     addProduct: addProductReducer,
@@ -40,7 +46,7 @@ const store = configureStore({
     getOrders: getOrdersReducer,
     addOrder: addOrderReducer,
   },
-  initialState,
+  preloadedState: initialState,
   enhancers: (defaultEnhancers) => [...defaultEnhancers], //applyMiddleware, devToolsExtension
 });
 

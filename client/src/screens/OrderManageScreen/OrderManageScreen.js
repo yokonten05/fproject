@@ -204,7 +204,7 @@ const OrderManageScreen = () => {
           </div>
         </section>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

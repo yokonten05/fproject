@@ -1,4 +1,7 @@
 import {
+  GET_USER_REQUEST,
+  GET_USER_SUCCESS,
+  GET_USER_FAIL,
   USER_LOGIN_FAIL,
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
@@ -11,6 +14,27 @@ import {
   USER_UPDATE_SUCCESS,
 } from "../constants/userConstants";
 import axios from "axios";
+
+export const getUser = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: GET_USER_REQUEST });
+
+    const { data } = await axios.get(`/api/users/${id}`);
+
+    dispatch({
+      type: GET_USER_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: GET_USER_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
 
 export const login = (email, password) => async (dispatch) => {
   try {

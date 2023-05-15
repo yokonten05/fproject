@@ -59,7 +59,7 @@ const ProductScreen = () => {
           </div>
         </section>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

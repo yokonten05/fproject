@@ -77,6 +77,12 @@ const Menu = () => {
                   </li>
                 </ul>
               </li>
+              <li className="nav-item">
+                <Link to="/purchase" className="nav-link">
+                  <i className="nav-icon fas fa-bag-shopping" />
+                  <p>การสั่งซื้อของฉัน</p>
+                </Link>
+              </li>
             </ul>
           </nav>
           {/* sidebar-menu */}

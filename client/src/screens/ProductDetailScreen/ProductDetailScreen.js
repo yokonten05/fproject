@@ -17,11 +17,13 @@ import ErrorMessage from "../../components/ErrorMessage";
 
 //Actions
 import { getProductDetails } from "../../actions/productActions";
-import { addToCart } from "../../actions/cartActions";
+import { getCartById as listCarts, addToCart } from "../../actions/cartActions";
+
+//get
+const userId = JSON.parse(localStorage.getItem("userInfo"))._id;
 
 const ProductDetailScreen = () => {
   const [qty, setQty] = useState({ label: "เลือกจำนวน", value: 0 });
-  console.log(qty)
   const { id } = useParams();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -32,14 +34,15 @@ const ProductDetailScreen = () => {
   useEffect(() => {
     if (product && id !== product._id) {
       dispatch(getProductDetails(id));
+      dispatch(listCarts(userId));
     }
-  }, [dispatch, product, useParams]);
+  }, [dispatch, id, product]);
 
   const addToCartHandLer = (e) => {
     e.preventDefault();
 
-    if (qty?.value == 0) return toast.error("โปรดเลือกจำนวนของสินค้า");
-    dispatch(addToCart(product._id, qty));
+    if (qty?.value === 0) return toast.error("โปรดเลือกจำนวนของสินค้า");
+    dispatch(addToCart(userId, product._id, qty));
     toast.success("เพิ่มสินค้าในตะกร้าเรียบร้อยแล้ว");
     // history.push("/cart");
   };
@@ -251,7 +254,7 @@ const ProductDetailScreen = () => {
           </>
         )}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

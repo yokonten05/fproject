@@ -1,29 +1,35 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
-// import {
-//   Container,
-//   Form,
-//   FormControl,
-//   Nav,
-//   Navbar,
-//   NavDropdown,
-// } from "react-bootstrap";
 
 //CSS
 import "./Header.css";
 
 //Actions
 import { logout } from "../../actions/userActions";
+import { getCartById as listCarts } from "../../actions/cartActions";
 
 const Header = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
-  const cart = useSelector((state) => state.cart);
-  const { cartItems } = cart;
+  //get
+  const userId = JSON.parse(localStorage.getItem("userInfo"))._id;
+
+  //list
+  // const userLogin = useSelector((state) => state.userLogin);
+  // const { userInfo } = userLogin;
+  // const cart = useSelector((state) => state.cart);
+  // const { cartItems } = cart;
+  const getCartById = useSelector((state) => state.getCarts);
+  const { loading, error, cartItems } = getCartById;
+  const addToCart = useSelector((state) => state.addCart);
+  const { cartItems: addSuccess } = addToCart;
+  const deleteCart = useSelector((state) => state.deleteCart);
+
+  useEffect(() => {
+    dispatch(listCarts(userId));
+  }, [dispatch, userId, addSuccess, deleteCart.success]);
 
   const LogoutHandler = () => {
     dispatch(logout());
@@ -31,7 +37,9 @@ const Header = () => {
   };
 
   const getAllCartCount = () => {
-    return cartItems.length;
+    if (cartItems) {
+      return cartItems.length;
+    }
   };
 
   const getCartSubTotal = (el) => {
@@ -41,7 +49,7 @@ const Header = () => {
   const viewCartHandLer = (e) => {
     e.preventDefault();
 
-    history.push("/checkout");
+    history.push("/cart");
   };
   return (
     <div>
@@ -85,10 +93,10 @@ const Header = () => {
               aria-labelledby="dropdownMenuButton"
               style={{ left: "inherit", right: 0 }}
             >
-              {cartItems.length === 0
+              {!cartItems || cartItems.length === 0
                 ? ""
                 : cartItems.map((el, index) => (
-                    <div key={el.product}>
+                    <div key={el.productId}>
                       <Link to="#" className="dropdown-item">
                         <div className="media">
                           <img
@@ -103,10 +111,9 @@ const Header = () => {
                                 {getCartSubTotal(el).toFixed(2)} บาท
                               </span>
                             </h3>
-                            {/* <p className="text-sm">The subject goes here</p> */}
-                            <p className="text-sm text-muted">
+                            {/* <p className="text-sm text-muted">
                               <i className="far fa-clock mr-1" /> 4 Hours Ago
-                            </p>
+                            </p> */}
                           </div>
                         </div>
                       </Link>
@@ -118,7 +125,7 @@ const Header = () => {
                 className="dropdown-item dropdown-footer"
                 onClick={viewCartHandLer}
               >
-                {cartItems.length === 0 ? (
+                {!cartItems || cartItems.length === 0 ? (
                   <div>ไม่มีสินค้าในตะกร้า</div>
                 ) : (
                   <div>ดูสินค้าในตะกร้าของคุณ</div>

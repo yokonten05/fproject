@@ -22,8 +22,30 @@ export const getOrders = () => async (dispatch) => {
   }
 };
 
+// export const getOrderById = (id) => async (dispatch) => {
+//   try {
+//     dispatch({ type: actionTypes.GET_ORDERS_DETAILS_REQUEST });
+
+//     const { data } = await axios.get(`/api/orders/${id}`);
+
+//     dispatch({
+//       type: actionTypes.GET_ORDERS_DETAILS_SUCCESS,
+//       payload: data,
+//     });
+//   } catch (error) {
+//     dispatch({
+//       type: actionTypes.GET_ORDERS_DETAILS_FAIL,
+//       payload:
+//         error.response && error.response.data.message
+//           ? error.response.data.message
+//           : error.message,
+//     });
+//   }
+// };
+
 export const addOrder =
   (
+    userId,
     senderTel,
     senderFirstName,
     senderLastName,
@@ -37,7 +59,6 @@ export const addOrder =
     beneficiaryCountry,
     beneficiaryPostcode,
     cartItems,
-    status = "pending",
     expireTime = new Date().addHours(6)
   ) =>
   async (dispatch) => {
@@ -53,6 +74,7 @@ export const addOrder =
       const { data } = await axios.post(
         `/api/orders/`,
         {
+          userId,
           senderTel,
           senderFirstName,
           senderLastName,
@@ -66,8 +88,7 @@ export const addOrder =
           beneficiaryCountry,
           beneficiaryPostcode,
           cartItems,
-          status,
-          expireTime
+          expireTime,
         },
         config
       );

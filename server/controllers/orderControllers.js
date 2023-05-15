@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 const Order = require("../models/orderModel");
+const Cart = require("../models/cartModel");
 
 const getAllOrders = async (req, res) => {
   try {
@@ -26,6 +27,7 @@ const getAllOrders = async (req, res) => {
 
 const addOrder = asyncHandler(async (req, res) => {
   const {
+    userId,
     senderTel,
     senderFirstName,
     senderLastName,
@@ -39,11 +41,11 @@ const addOrder = asyncHandler(async (req, res) => {
     beneficiaryCountry,
     beneficiaryPostcode,
     cartItems,
-    status,
-    expireTime
+    expireTime,
   } = req.body;
-  console.log(req.body);
+
   const order = await Order.create({
+    userId: mongoose.Types.ObjectId(userId),
     senderTel,
     senderFirstName,
     senderLastName,
@@ -57,13 +59,19 @@ const addOrder = asyncHandler(async (req, res) => {
     beneficiaryCountry,
     beneficiaryPostcode,
     cartItems,
-    status,
-    expireTime
+    expireTime,
+    status: "pending",
   });
-  console.log(order);
+
   if (order) {
+    await Cart.updateOne(
+      { userId: mongoose.Types.ObjectId(userId) },
+      { $set: { cartItems: [] } }
+    );
+
     res.status(201).json({
       _id: order._id,
+      userId: order.userId,
       senderTel: order.senderTel,
       senderFirstName: order.senderFirstName,
       senderLastName: order.senderLastName,

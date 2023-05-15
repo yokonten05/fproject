@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Select from "react-select";
 import { Link, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2";
 
 //CSS
 import "./CartScreen.css";
@@ -20,23 +21,32 @@ const CartScreen = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const cart = useSelector((state) => state.cart);
-  const { cartItems } = cart;
-  console.log(cartItems);
-  const qtyChangeHandler = (id, qty) => {
-    dispatch(addToCart(id, qty));
+  //get
+  const userId = JSON.parse(localStorage.getItem("userInfo"))._id;
+
+  // const cart = useSelector((state) => state.cart);
+  // const { cartItems } = cart;
+  const getCartById = useSelector((state) => state.getCarts);
+  const { loading, error, cartItems } = getCartById;
+
+  const qtyChangeHandler = (productId, qty) => {
+    dispatch(addToCart(userId, productId, qty));
   };
 
-  const removeHandler = (id) => {
-    dispatch(removeFromCart(id));
+  const removeHandler = (productId) => {
+    dispatch(removeFromCart(productId, userId));
   };
 
   const getCartCount = () => {
-    return cartItems.reduce((pre, cur) => pre + cur.qty.value, 0);
+    return cartItems
+      ? cartItems.reduce((pre, cur) => pre + cur.qty.value, 0)
+      : 0;
   };
 
   const getCartTotal = () => {
-    return cartItems.reduce((pre, cur) => cur.price * cur.qty.value + pre, 0);
+    return cartItems
+      ? cartItems.reduce((pre, cur) => cur.price * cur.qty.value + pre, 0)
+      : 0;
   };
 
   const getCartSubTotal = (item) => {
@@ -46,6 +56,12 @@ const CartScreen = () => {
   const goToCheckOut = (e) => {
     e.preventDefault();
 
+    if (!cartItems || cartItems.length === 0)
+      return Swal.fire({
+        text: "คุณยังไม่มีสินค้าในตะกร้า",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+      });
     history.push("/checkout");
   };
   return (
@@ -64,14 +80,14 @@ const CartScreen = () => {
 
             <section className="content">
               <div className="container-fluid">
-                {cartItems.length === 0 ? (
+                {!cartItems || cartItems.length === 0 ? (
                   <div>
                     Your cart is empty <Link to="/dashboard">Go Back</Link>
                   </div>
                 ) : (
                   cartItems.map((item) => (
                     <CartItem
-                      key={item.product}
+                      key={item.productId}
                       item={item}
                       qtyChangeHandler={qtyChangeHandler}
                       removeHandler={removeHandler}
@@ -105,7 +121,7 @@ const CartScreen = () => {
                   </div>
                 </div>
 
-                {cartItems.length === 0 ? (
+                {!cartItems || cartItems.length === 0 ? (
                   <div className="row">
                     <div className="col">ไม่มีสินค้าที่ถูกเพิ่ม</div>
                     <div className="col text-right">00.00 ฿</div>
@@ -129,20 +145,6 @@ const CartScreen = () => {
                     <b>{getCartCount()} ชิ้น</b>
                   </div>
                 </div>
-                {/* <div className="row my-3">
-                  <div className="col">
-                    <form>
-                      <h4 className="mt-3">SHIPPING</h4>
-                      <Select options={[]}></Select>
-                      <h4 className="mt-3">GIVE CODE</h4>
-                      <input
-                        className="form-control"
-                        id="code"
-                        placeholder="Enter your code"
-                      />
-                    </form>
-                  </div>
-                </div> */}
                 <hr />
                 <div className="row my-3">
                   <h4 className="col">ราคารวม</h4>
@@ -150,7 +152,7 @@ const CartScreen = () => {
                     {getCartTotal().toFixed(2)} ฿
                   </h4>
                 </div>
-                {/* <div className="">
+                <div className="">
                   <button
                     className="btn btn-primary btn-lg w-100"
                     id="checkOutButton"
@@ -158,35 +160,13 @@ const CartScreen = () => {
                   >
                     สั่งซื้อสินค้า
                   </button>
-                </div> */}
-              </div>
-            </section>
-          </div>
-        </div>
-
-        <hr></hr>
-        {/* checkout */}
-        <div className="row">
-          <div className="col-sm-12 col-lg-12">
-            <section className="content-header">
-              <div className="container-fluid">
-                <div className="row mb-2">
-                  <div className="col-sm-12">
-                    <h1 className="m-0">Checkout</h1>
-                  </div>
                 </div>
-              </div>
-            </section>
-
-            <section className="content">
-              <div className="container-fluid">
-                <CheckOut />
               </div>
             </section>
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };
