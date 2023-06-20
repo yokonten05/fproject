@@ -1,19 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+import { Link } from "react-router-dom";
 
 //CSS
 import "./PurchaseScreen.css";
 
 //Components
-import Product from "../../components/Product/Product";
 import Menu from "../../components/Menu/Menu";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
 import ImageResize from "../../components/ImageResize/ImageResize";
-import { Link } from "react-router-dom";
+import CurrencyFormatter from "../../components/CurrencyFormatter";
+import DateFormatter from "../../components/DateFormatter";
+import PayModal from "../../components/Modal/PayModal";
 
 //Actions
 import {
@@ -24,19 +26,48 @@ import {
 const PurchaseScreen = () => {
   const dispatch = useDispatch();
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedModal, setSelectedModal] = useState(null);
+
+  const openModal = (item) => {
+    setModalOpen(true);
+    setSelectedModal(item);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
   //list
   const getOrders = useSelector((state) => state.getOrders);
   const { loading, error, orders } = getOrders;
-  console.log(orders);
 
   useEffect(() => {
     dispatch(listOrders());
   }, [dispatch]);
+
+  const getOrderTotal = (price, value) => {
+    return price * value;
+  };
+
+  const getSummaryTotal = (cartItems) => {
+    return cartItems.reduce(
+      (total, item) => total + item.price * item.qty.value,
+      0
+    );
+  };
+
   return (
     <div>
       <Menu />
       <Header />
       <div className="content-wrapper">
+        <PayModal
+          modalData={selectedModal}
+          show={modalOpen}
+          onClose={closeModal}
+          item={orders}
+        />
         <section className="content-header">
           <div className="container-fluid">
             <div className="row mb-2">
@@ -50,94 +81,6 @@ const PurchaseScreen = () => {
           <div className="container-fluid">
             <div className="row">
               <div className="col-lg-12">
-                {/* <div className>
-                  <div className="table-responsive">
-                    <p>test</p>
-                    <table className="table project-list-table table-nowrap align-middle table-borderless">
-                      <thead>
-                        <tr>
-                          <th scope="col">Name</th>
-                          <th scope="col">Position</th>
-                          <th scope="col">Email</th>
-                          <th scope="col">Projects</th>
-                          <th scope="col" style={{ width: 200 }}>
-                            Action
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="highlighted">
-                          <td>
-                            <img
-                              src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                              alt=""
-                              className="avatar-sm rounded-circle me-2"
-                            />
-                            <Link to="#" className="text-body">
-                              Simon Ryles
-                            </Link>
-                          </td>
-                          <td>
-                            <span className="badge badge-soft-success mb-0">
-                              Full Stack Developer
-                            </span>
-                          </td>
-                          <td>SimonRyles@minible.com</td>
-                          <td>125</td>
-                          <td>
-                            <ul className="list-inline mb-0">
-                              <li className="list-inline-item">
-                                <Link
-                                  to="#"
-                                  data-bs-toggle="tooltip"
-                                  data-bs-placement="top"
-                                  title="Edit"
-                                  className="px-2 text-primary"
-                                >
-                                  <i className="bx bx-pencil font-size-18" />
-                                </Link>
-                              </li>
-                              <li className="list-inline-item">
-                                <Link
-                                  to="#"
-                                  data-bs-toggle="tooltip"
-                                  data-bs-placement="top"
-                                  title="Delete"
-                                  className="px-2 text-danger"
-                                >
-                                  <i className="bx bx-trash-alt font-size-18" />
-                                </Link>
-                              </li>
-                              <li className="list-inline-item dropdown">
-                                <Link
-                                  className="text-muted dropdown-toggle font-size-18 px-2"
-                                  to="#"
-                                  role="button"
-                                  data-bs-toggle="dropdown"
-                                  aria-haspopup="true"
-                                >
-                                  <i className="bx bx-dots-vertical-rounded" />
-                                </Link>
-                                <div className="dropdown-menu dropdown-menu-end">
-                                  <Link className="dropdown-item" to="#">
-                                    Action
-                                  </Link>
-                                  <Link className="dropdown-item" to="#">
-                                    Another action
-                                  </Link>
-                                  <Link className="dropdown-item" to="#">
-                                    Something else here
-                                  </Link>
-                                </div>
-                              </li>
-                            </ul>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <hr></hr>
-                </div> */}
                 {loading ? (
                   <Loading />
                 ) : error ? (
@@ -149,14 +92,41 @@ const PurchaseScreen = () => {
                     ) : (
                       orders.map((item, index) => (
                         <div className="card" key={index}>
-                          <div className="card-header p-2">
-                            <ul className="nav nav-pills" style={{justifyContent: "space-between"}}>
-                              <button type="button" class="btn btn-primary">
-                                เลขออเดอร์: {item._id}
-                              </button>
-                              <button type="button" class="btn btn-warning">
-                                สถานะการสั่งซื้อ: {item.status}
-                              </button>
+                          <div className="card-header">
+                            <ul className="nav nav-pills">
+                              <div className="card-title">
+                                <span className="text-muted">
+                                  วันที่ทำรายการ:&nbsp;
+                                </span>
+                                <span>
+                                  <DateFormatter date={item.createdAt} />
+                                </span>
+                              </div>
+                              <div className="card-title">
+                                <span className="text-muted">ราคารวม: </span>
+                                {
+                                  <span>
+                                    <CurrencyFormatter
+                                      value={getSummaryTotal(item.cartItems)}
+                                    />
+                                  </span>
+                                }{" "}
+                                บาท
+                              </div>
+                              {/* <h4
+                                className="float-right"
+                                style={{ marginBottom: 0 }}
+                              >
+                                ราคารวม:{" "}
+                                {
+                                  <b>
+                                    <CurrencyFormatter
+                                      value={getSummaryTotal(item.cartItems)}
+                                    />
+                                  </b>
+                                }{" "}
+                                บาท
+                              </h4> */}
                             </ul>
                           </div>
                           <div className="card-body">
@@ -165,15 +135,19 @@ const PurchaseScreen = () => {
                                 <div className="post" key={i}>
                                   <div className="table-responsive">
                                     <table className="table shoping-cart-table">
-                                      <col style={{ width: "10%" }} />
-                                      <col style={{ width: "70%" }} />
-                                      <col style={{ width: "20%" }} />
+                                      <colgroup>
+                                        <col style={{ width: "10%" }} />
+                                        <col style={{ width: "70%" }} />
+                                        <col style={{ width: "20%" }} />
+                                      </colgroup>
                                       <tbody>
                                         <tr>
                                           <td className="">
                                             <div className="cart-product-imitation">
                                               <ImageResize
                                                 imageUrl={el.imageUrl}
+                                                width="80"
+                                                height="80"
                                               />
                                             </div>
                                           </td>
@@ -187,31 +161,41 @@ const PurchaseScreen = () => {
                                               </Link>
                                             </h3>
                                             <dl className="small m-b-none">
-                                              <dt>Description lists</dt>
+                                              <dt>รายละเอียดสินค้า</dt>
                                               <dd>
-                                                A description list is perfect
-                                                for defining terms.
+                                                {el.description ? (
+                                                  el.description
+                                                ) : (
+                                                  <p>ไม่มี</p>
+                                                )}
                                               </dd>
                                             </dl>
                                             <div className="m-t-sm">
-                                              <Link
-                                                to="#"
-                                                className="text-muted"
-                                              >
-                                                จำนวน: {el.qty.value}
-                                              </Link>
+                                              <span className="text-muted">
+                                                จำนวน: {el.qty.value} ชิ้น
+                                              </span>
                                               |
-                                              <Link
-                                                to="#"
-                                                className="text-muted"
-                                              >
-                                                {" "}
-                                                ราคา: {el.price}
-                                              </Link>
+                                              <span className="text-muted">
+                                                ราคาต่อชิ้น:{" "}
+                                                <CurrencyFormatter
+                                                  value={el.price}
+                                                />{" "}
+                                                บาท
+                                              </span>
                                             </div>
                                           </td>
-                                          <td>
-                                            <h4>{el.price}</h4>
+                                          <td style={{ textAlign: "right" }}>
+                                            <h4>
+                                              {
+                                                <CurrencyFormatter
+                                                  value={getOrderTotal(
+                                                    el.price,
+                                                    el.qty.value
+                                                  )}
+                                                />
+                                              }{" "}
+                                              บาท
+                                            </h4>
                                           </td>
                                         </tr>
                                       </tbody>
@@ -220,6 +204,22 @@ const PurchaseScreen = () => {
                                 </div>
                               ))}
                             </div>
+                          </div>
+                          <div className="card-footer">
+                            <button
+                              type="submit"
+                              className="btn btn-danger float-right"
+                            >
+                              ยกเลิก
+                            </button>
+                            <button
+                              type="submit"
+                              className="btn btn-primary float-right"
+                              style={{ marginRight: 5 }}
+                              onClick={() => openModal(item)}
+                            >
+                              ชำระเงิน
+                            </button>
                           </div>
                         </div>
                       ))

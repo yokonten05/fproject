@@ -17,6 +17,7 @@ import ProductScreen from "./screens/ProductScreen/ProductScreen";
 import ProductManageScreen from "./screens/ProductManageScreen/ProductManageScreen";
 import OrderManageScreen from "./screens/OrderManageScreen/OrderManageScreen";
 import PurchaseScreen from "./screens/PurchaseScreen/PurchaseScreen";
+import PayScreen from "./screens/PayScreen/PayScreen";
 
 function App() {
   return (
@@ -52,6 +53,9 @@ function App() {
           <Route path="/purchase">
             <PurchaseScreen />
           </Route>
+          <Route path="/pay">
+            <PayScreen />
+          </Route>
           <Route path="/login">
             <LoginScreen />
           </Route>
@@ -60,7 +64,7 @@ function App() {
           </Route>
         </Switch>
       </main>
-      {/* {/* <Footer /> */} */}
+      {/* {/* <Footer /> */}
     </Router>
   );
 }

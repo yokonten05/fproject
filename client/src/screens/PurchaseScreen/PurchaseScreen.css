@@ -1,5 +1,10 @@
-.card-header {
+/* .card-header {
     background-color: unset;
+} */
+
+.card-header ul {
+    justify-content: space-between;
+    align-items: center;
 }
 
 table.shoping-cart-table tr td {

@@ -28,10 +28,10 @@ const getCartById = async (req, res) => {
 };
 
 const addCart = asyncHandler(async (req, res) => {
-  const { userId, productId, name, price, countInStock, imageUrl, qty } =
+  const { userId, productId, name, price, countInStock, imageUrl, qty, description } =
     req.body;
 
-  const item = { productId, name, price, countInStock, imageUrl, qty };
+  const item = { productId, name, price, countInStock, imageUrl, qty, description };
   let user = await Cart.findOne({ userId: mongoose.Types.ObjectId(userId) });
 
   //Create new user cart

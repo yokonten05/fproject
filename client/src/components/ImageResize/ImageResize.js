@@ -1,13 +1,15 @@
 import React from "react";
 import { Img } from "react-image";
 
-const ImageResize = ({ imageUrl }) => {
+const ImageResize = ({ imageUrl, width, height, className }) => {
+  const combinedClassName = `rounded ${className}`;
+
   return (
     <Img
       src={imageUrl}
-      width={80}
-      height={80}
-      className="rounded"
+      width={width}
+      height={height}
+      className={combinedClassName}
       alt="MyImage"
     />
   );
